@@ -52,8 +52,7 @@ function renderCanvas(data) {
 
   // Renderöidään jokainen piste
   data.forEach(item => {
-    // Asetetaan väri (tässä esimerkissä grayscale-arvo)
-
+    // Asetetaan väri f32 -> hex -> 0.eeffee -> #eeffee
     ctx.fillStyle = "#" + item.color.toString(16).split(".").at(1);
 
     // Piirretään ympyrä

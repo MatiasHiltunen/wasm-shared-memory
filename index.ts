@@ -1,67 +1,67 @@
-import { it } from 'node:test';
-import init, { SharedBuffer} from './pkg/wasm_test_rust.js';
+import init, { SharedBuffer } from './pkg';
 
-interface Point {
-  x: number,
-  y: number,
-  color: number,
-  depth: number
-}
+const BYTE_LENGTH = 8
+const numElements = 2000;
+let buffer: SharedBuffer;
+
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d')!;
+
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 async function run() {
-
+  
   const wasm = await init();
-
-  const memory = wasm.memory
-
-  const numElements = 50000;
-
-  // Luodaan uusi SharedBuffer
-  const buffer = new SharedBuffer(numElements, window.innerWidth, window.innerHeight);
-
-  // Täytetään puskuri datalla Rustin puolella
+  
+  buffer = new SharedBuffer(numElements, window.innerWidth, window.innerHeight);
+  
   buffer.fill_with_data();
 
-  // Luodaan Float32Array, joka osoittaa suoraan WebAssemblyn muistiin
-  const wasmMemory = new Float32Array(memory.buffer, buffer.ptr(), buffer.len());
+  // Buffer uses byte length of 8: x, y, color, depth, T, speed, null, null
+  const wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
+  
+  const animate = () => {
+    buffer.update();
+    updateCanvasWithSharedMemory(wasmMemory);
+    requestAnimationFrame(animate)
+  }
 
-  // Binaaridata -> js 
-  const data: Point[] = [];
-  for (let i = 0; i < wasmMemory.length; i += 4) {
+  animate()
+
+}
+
+
+window.addEventListener("resize", ()=>{
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  buffer.resize(window.innerWidth,  window.innerHeight)
+
+})
+
+function updateCanvasWithSharedMemory(wasmMemory: Float32Array) {
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // BYTE_LENGTH of 8 is used here as Float32Array needs it to be divisble by 4
+  for (let i = 0; i < wasmMemory.length; i += BYTE_LENGTH) {
     const x = wasmMemory[i];
     const y = wasmMemory[i + 1];
     const color = wasmMemory[i + 2];
     const depth = wasmMemory[i + 3];
-    data.push({ x, y, color, depth });
-  }
 
+    ctx.fillStyle = "#" + (color.toString(16)).split(".")[1];
 
-  renderCanvas(data);
-}
-
-function renderCanvas(data) {
-  const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d')!;
-
-  // Asetetaan canvaksen koko
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  // Tyhjennetään canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Renderöidään jokainen piste
-  data.forEach(item => {
-    // Asetetaan väri f32 -> hex -> 0.eeffee -> #eeffee
-    ctx.fillStyle = "#" + item.color.toString(16).split(".").at(1);
-
-    // Piirretään ympyrä
-    const radius = 5 * (1 - item.depth); // "Syvyys"
+    const radius = 10 * (1 - depth);
 
     ctx.beginPath();
-    ctx.arc(item.x, item.y, radius, 0, 2 * Math.PI);
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
     ctx.fill();
-  });
+
+  }
+
 }
 
 run();

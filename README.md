@@ -15,12 +15,13 @@ npm install
 ```
 2. Build WebAssembly
 ``` sh
-# runs the "wasm-pack build --target web" from package.json
+# Needed first time to create pkg-folder and to compile WASM module
 npm run wasm
 ```
 
 Start development server
 ``` sh
+# runs the "wasm-pack build --target web && vite" in package.json
 npm run dev
 ```
 

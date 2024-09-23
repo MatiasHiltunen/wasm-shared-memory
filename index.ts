@@ -1,8 +1,9 @@
 import init, { SharedBuffer } from './pkg';
 
 const BYTE_LENGTH = 8
-const numElements = 2000;
+let numElements = 50;
 let buffer: SharedBuffer;
+let wasmMemory: Float32Array;
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -20,10 +21,10 @@ async function run() {
   buffer.fill_with_data();
 
   // Buffer uses byte length of 8: x, y, color, depth, T, speed, null, null
-  const wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
   
   const animate = () => {
     buffer.update();
+    wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
     updateCanvasWithSharedMemory(wasmMemory);
     requestAnimationFrame(animate)
   }
@@ -32,6 +33,14 @@ async function run() {
 
 }
 
+canvas.addEventListener("click", ()=>{
+  buffer.free()
+  buffer = new SharedBuffer(numElements++, window.innerWidth, window.innerHeight);
+
+  buffer.fill_with_data();
+  //wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
+
+})
 
 window.addEventListener("resize", ()=>{
 

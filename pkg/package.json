@@ -1,0 +1,18 @@
+{
+  "name": "wasm-test-rust",
+  "type": "module",
+  "collaborators": [
+    "Matias Hiltunen <26164588+MatiasHiltunen@users.noreply.github.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "wasm_test_rust_bg.wasm",
+    "wasm_test_rust.js",
+    "wasm_test_rust.d.ts"
+  ],
+  "main": "wasm_test_rust.js",
+  "types": "wasm_test_rust.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

@@ -1,7 +1,7 @@
 import init, { SharedBuffer } from './pkg';
 
 const BYTE_LENGTH = 8
-let numElements = 100;
+let numElements = 2000;
 let buffer: SharedBuffer;
 let wasmMemory: Float32Array;
 
@@ -33,32 +33,50 @@ async function run() {
 
 }
 
-/* canvas.addEventListener("click", ()=>{
+/* canvas.addEventListener("", ()=>{
   buffer.free()
   buffer = new SharedBuffer(numElements++, window.innerWidth, window.innerHeight);
 
   buffer.fill_with_data();
   //wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
 
-})
- */
+}) */
+
 let mouse: [number, number] | null = null
 
-canvas.addEventListener("mousemove", (e)=>{
+
+
+canvas.addEventListener("pointermove", (e) => {
   if(mouse){
     const {clientX, clientY} = e
-
     mouse = [clientX, clientY]
   }
+
 })
 
-canvas.addEventListener("mousedown", (e)=>{
-  const {clientX, clientY} = e
+canvas.addEventListener("touchstart", (e) => {
+  if(mouse){
+    const {clientX, clientY} = e.targetTouches.item(0)!
+  
+    mouse = [clientX, clientY]
+  }
 
+})
+
+canvas.addEventListener("touchmove", (e) => {
+  if(mouse){
+    const {clientX, clientY} = e.targetTouches.item(0)!
+    mouse = [clientX, clientY]
+  }
+
+})
+
+canvas.addEventListener("pointerdown", (e)=>{
+  const {clientX, clientY} = e
   mouse = [clientX, clientY]
 })
 
-canvas.addEventListener("mouseup", ()=>{
+canvas.addEventListener("pointerup", ()=>{
   mouse = null
 })
 

@@ -112,8 +112,8 @@ export class SharedBuffer {
     * @param {number} width
     * @param {number} height
     */
-    resize(width, height) {
-        wasm.sharedbuffer_resize(this.__wbg_ptr, width, height);
+    update_screen(width, height) {
+        wasm.sharedbuffer_update_screen(this.__wbg_ptr, width, height);
     }
 }
 

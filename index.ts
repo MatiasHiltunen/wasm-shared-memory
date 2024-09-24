@@ -1,7 +1,7 @@
 import init, { SharedBuffer } from './pkg';
 
 const BYTE_LENGTH = 8
-let numElements = 2500;
+let numElements = 100;
 let buffer: SharedBuffer;
 let wasmMemory: Float32Array;
 
@@ -33,7 +33,7 @@ async function run() {
 
 }
 
-canvas.addEventListener("click", ()=>{
+/* canvas.addEventListener("click", ()=>{
   buffer.free()
   buffer = new SharedBuffer(numElements++, window.innerWidth, window.innerHeight);
 
@@ -41,12 +41,32 @@ canvas.addEventListener("click", ()=>{
   //wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
 
 })
+ */
+let mouse: [number, number] | null = null
+
+canvas.addEventListener("mousemove", (e)=>{
+  if(mouse){
+    const {clientX, clientY} = e
+
+    mouse = [clientX, clientY]
+  }
+})
+
+canvas.addEventListener("mousedown", (e)=>{
+  const {clientX, clientY} = e
+
+  mouse = [clientX, clientY]
+})
+
+canvas.addEventListener("mouseup", ()=>{
+  mouse = null
+})
 
 window.addEventListener("resize", ()=>{
 
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  buffer.resize(window.innerWidth,  window.innerHeight)
+  buffer.update_screen(window.innerWidth,  window.innerHeight)
 
 })
 
@@ -56,12 +76,20 @@ function updateCanvasWithSharedMemory(wasmMemory: Float32Array) {
 
   // BYTE_LENGTH of 8 is used here as Float32Array needs it to be divisble by 4
   for (let i = 0; i < wasmMemory.length; i += BYTE_LENGTH) {
-    const x = wasmMemory[i];
-    const y = wasmMemory[i + 1];
+    let x = wasmMemory[i];
+    let y = wasmMemory[i + 1];
     const color = wasmMemory[i + 2];
     const depth = wasmMemory[i + 3];
 
     ctx.fillStyle = "#" + (color.toString(16)).split(".")[1];
+
+    if(mouse){
+      const d = Math.sqrt((x - mouse[0]) ** 2 + (y - mouse[1]) ** 2)
+
+      if(d < 50){
+        wasmMemory[i+5] = wasmMemory[i+5] < 0 ? wasmMemory[i+5] - 0.001 : wasmMemory[i+5] + 0.001
+      }
+    }
 
     const radius = 10 * (1 - depth);
 

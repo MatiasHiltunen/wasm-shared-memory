@@ -28,7 +28,7 @@ export class SharedBuffer {
 * @param {number} width
 * @param {number} height
 */
-  resize(width: number, height: number): void;
+  update_screen(width: number, height: number): void;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -41,7 +41,7 @@ export interface InitOutput {
   readonly sharedbuffer_len: (a: number) => number;
   readonly sharedbuffer_fill_with_data: (a: number) => void;
   readonly sharedbuffer_update: (a: number) => void;
-  readonly sharedbuffer_resize: (a: number, b: number, c: number) => void;
+  readonly sharedbuffer_update_screen: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 

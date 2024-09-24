@@ -89,7 +89,7 @@ impl SharedBuffer {
         }
     }
 
-    pub fn resize(&mut self, width: usize, height: usize) {
+    pub fn update_screen(&mut self, width: usize, height: usize) {
 
         self.width = width;
         self.height = height;

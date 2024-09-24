@@ -8,10 +8,30 @@ let wasmMemory: Float32Array;
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
+function setSize( width: number, height: number, updateStyle = false ) {
 
-canvas.width = window.innerWidth;
+
+
+  canvas.width = width * devicePixelRatio;
+  canvas.height = height * devicePixelRatio;
+
+  if ( updateStyle !== false ) {
+
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+
+  }
+
+  ctx.scale( devicePixelRatio, devicePixelRatio );
+
+
+};
+
+setSize(window.innerWidth, window.innerHeight, true)
+
+/* canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
+ */
 async function run() {
   
   const wasm = await init();
@@ -82,11 +102,14 @@ canvas.addEventListener("pointerup", ()=>{
 
 window.addEventListener("resize", ()=>{
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  setSize(window.innerWidth, window.innerHeight, true)
+
   buffer.update_screen(window.innerWidth,  window.innerHeight)
 
 })
+
+
+
 
 function updateCanvasWithSharedMemory(wasmMemory: Float32Array) {
 
@@ -106,6 +129,13 @@ function updateCanvasWithSharedMemory(wasmMemory: Float32Array) {
 
       if(d < 50){
         wasmMemory[i+5] = wasmMemory[i+5] < 0 ? wasmMemory[i+5] - 0.001 : wasmMemory[i+5] + 0.001
+        
+        
+      }
+      if(d < 80){
+
+        wasmMemory[i] = wasmMemory[i] < 200 ? wasmMemory[i] + 2 : wasmMemory[i] - 2
+        wasmMemory[i+1] = wasmMemory[i+1] < 200 ? wasmMemory[i+1] + 2 : wasmMemory[i+1] - 2
       }
     }
 

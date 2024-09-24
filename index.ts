@@ -29,6 +29,8 @@ function setSize( width: number, height: number, updateStyle = false ) {
 
 setSize(window.innerWidth, window.innerHeight, true)
 
+let mouse: [number, number] | null = null
+
 /* canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
  */
@@ -43,7 +45,13 @@ async function run() {
   // Buffer uses byte length of 8: x, y, color, depth, T, speed, null, null
   
   const animate = () => {
-    buffer.update();
+    if(mouse){
+
+      buffer.update(mouse[0], mouse[1]);
+    } else {
+      buffer.update(0,0);
+
+    }
     wasmMemory = new Float32Array(wasm.memory.buffer, buffer.ptr(), buffer.len());
     updateCanvasWithSharedMemory(wasmMemory);
     requestAnimationFrame(animate)
@@ -62,7 +70,6 @@ async function run() {
 
 }) */
 
-let mouse: [number, number] | null = null
 
 
 
@@ -124,7 +131,7 @@ function updateCanvasWithSharedMemory(wasmMemory: Float32Array) {
 
     ctx.fillStyle = "#" + (color.toString(16)).split(".")[1];
 
-    if(mouse){
+/*     if(mouse){
       const d = Math.sqrt((x - mouse[0]) ** 2 + (y - mouse[1]) ** 2)
 
       if(d < 50){
@@ -137,7 +144,7 @@ function updateCanvasWithSharedMemory(wasmMemory: Float32Array) {
         wasmMemory[i] = wasmMemory[i] < 200 ? wasmMemory[i] + 2 : wasmMemory[i] - 2
         wasmMemory[i+1] = wasmMemory[i+1] < 200 ? wasmMemory[i+1] + 2 : wasmMemory[i+1] - 2
       }
-    }
+    } */
 
     const radius = 10 * (1 - depth);
 

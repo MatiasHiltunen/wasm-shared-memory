@@ -65,8 +65,8 @@ impl SharedBuffer {
             }
         }
     }
-
-    pub fn update(&self) {
+    #[wasm_bindgen]
+    pub fn update(&self, mx:usize, my:usize) {
         let num_elements = self.len / LEN as usize;
 
         let a = (&self.width / 2) as f32;
@@ -84,7 +84,40 @@ impl SharedBuffer {
 
                 *self.ptr.add(base) = a + r * direction.cos(); // x
                 *self.ptr.add(base + 1) = b + r * direction.sin(); // y
-                *self.ptr.add(base + 4) = direction + *self.ptr.add(base + 5) // T + Speed
+                *self.ptr.add(base + 4) = direction + *self.ptr.add(base + 5); // T + Speed
+
+
+                if mx as f32 > 0.0 && my as f32 > 0.0 {
+                    let dx = *self.ptr.add(base) - mx as f32;
+                    let dy = *self.ptr.add(base + 1) - my as f32;
+                    let d = (dx * dx + dy * dy).sqrt();
+                
+                    if d < 50.0 {
+                   
+                            if *self.ptr.add(base + 5) < 0.0 {
+                                *self.ptr.add(base + 5) -= 0.001;
+                            } else {
+                                *self.ptr.add(base + 5) += 0.001;
+                            }
+                        
+                    }
+                    if d < 80.0 {
+                      
+                            if *self.ptr.add(base) < 200.0 {
+                                *self.ptr.add(base) += 2.0;
+                            } else {
+                                *self.ptr.add(base) -= 2.0;
+                            }
+                        
+             
+                            if *self.ptr.add(base + 1) < 200.0 {
+                                *self.ptr.add(base + 1) += 2.0;
+                            } else {
+                                *self.ptr.add(base + 1) -= 2.0;
+                            }
+                        
+                    }
+                }
             }
         }
     }

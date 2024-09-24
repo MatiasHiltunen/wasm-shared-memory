@@ -104,9 +104,11 @@ export class SharedBuffer {
         wasm.sharedbuffer_fill_with_data(this.__wbg_ptr);
     }
     /**
+    * @param {number} mx
+    * @param {number} my
     */
-    update() {
-        wasm.sharedbuffer_update(this.__wbg_ptr);
+    update(mx, my) {
+        wasm.sharedbuffer_update(this.__wbg_ptr, mx, my);
     }
     /**
     * @param {number} width

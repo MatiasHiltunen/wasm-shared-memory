@@ -1,7 +1,7 @@
 import init, { SharedBuffer } from './pkg';
 
 const BYTE_LENGTH = 8
-let numElements = 50;
+let numElements = 2500;
 let buffer: SharedBuffer;
 let wasmMemory: Float32Array;
 
